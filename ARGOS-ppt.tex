@@ -1,0 +1,568 @@
+\documentclass[mathserif]{beamer}
+\usepackage{beamerthemeshadow}
+\usepackage{beamerthemesplit}
+%\usetheme{shadow}
+\usecolortheme{default}
+\setbeamertemplate{footline}[frame number]
+\useinnertheme[shadow=true]{rounded}
+%\setbeamertemplate{footline}{\insertframenumber/\inserttotalframenumber}
+%\useoutertheme{infolines}
+%\setbeamertemplate{headline}{} % removes the headline that infolines inserts
+
+%\usetheme{boxes}
+%\usepackage{amsmass}
+%\usepackage{amssymb,amsfonts,url}
+
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+
+\usepackage{graphicx}
+\graphicspath{figures}
+
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{pgfplots}
+\usepackage{verbatim}
+\usetikzlibrary{arrows,shapes}
+
+%\usepackage{multirow}
+%\usetheme{Frankfurt}
+%\usecolortheme{default}
+%\setbeamertemplate{frametitle}[default][left]
+%
+%\usepackage{graphicx}
+%%\graphicspath{{./fig/}}
+%\usepackage{float}
+%%\usepackage{color}
+
+\usepackage{cases}
+\usepackage{mathrsfs}
+
+\usepackage{url}
+
+\newcommand{\rmnum}[1]{\romannumeral#1}
+\newcommand{\Rmnum}[1]{\uppercase\expandafter{\romannumeral#1}}
+
+\title{ARCS: Assemble short-reads via combinatorial optimization in scaffolding }
+\author{Qing Xu, Renyu Zhang, Shuai Cheng Li, Shiwei Sun,\\Ting Chen, and Dongbo Bu} 
+\institute{Institute of Computing Technology, CAS  \\ 
+       Tsinghua University \\ 
+       City University of Hong Kong
+} 
+\date{\today} 
+
+
+\begin{document}
+	
+
+	\begin{frame}
+			\titlepage
+	\end{frame}
+	
+	\begin{frame}
+			\frametitle{Genome sequencing: a brief introduction}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=6.5in]{Genome.eps}
+			\end{figure}
+	\end{frame}
+
+	\begin{frame}
+			\frametitle{Genome sequencing: a brief introduction}
+                     				\centering
+                          \begin{figure}
+				\includegraphics[width=7in]{ShotgunAssembly.eps}
+			\end{figure}
+	\end{frame}
+
+%	\begin{frame}
+%		\frametitle{Genome sequencing machines}
+%                          \begin{figure}
+%				\centering
+%				\includegraphics[width=4.5in]{GenomeSequencer.eps}
+%			\end{figure}
+%		
+%	\end{frame} 
+	
+%	\begin{frame}
+%			\frametitle{Genome assembly: an example}
+%                          \begin{figure}
+%				\centering
+%				\includegraphics[width=4in]{AssemblyExample.eps}
+%			\end{figure}
+%
+%	\end{frame}
+	
+	\begin{frame}
+			\frametitle{An analogy of genome assembly: read book from strips}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=1.8in]{GenomeBookStrips.eps}
+			\end{figure}
+			\begin{itemize}
+			\item Question: Given a bag of strips, how to read out the whole book? 
+			\end{itemize}
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{Rice genome: Sanger sequencing technique} 
+				
+\begin{figure}%
+   \begin{center}%
+     \begin{minipage}{0.20\textwidth}%
+      \includegraphics[width=1.0\textwidth]{RiceGenome.png}%
+     \end{minipage}%
+     \ 
+     \begin{minipage}{0.35\textwidth}
+      \includegraphics[width=1.0\textwidth]{3730.png}
+     \end{minipage}%
+   \end{center}
+%\caption[1]{R. Fano (left) and D. Huffman (right) }
+ \end{figure}
+\begin{itemize}
+	\item Read length: 400-900 bp
+	\item Cost: $\$$2000 per Mb
+	\item Accuracy: $99.99\%$
+\end{itemize}
+
+
+
+%		Classical model: de Bruijn graph $\Rightarrow$ Eulerian cycle}
+%                          \begin{figure}
+%				\centering
+%				\includegraphics[width=4.5in]{EulerianPath.eps}
+%			\end{figure}
+		
+		
+	\end{frame}
+
+
+
+	
+	\begin{frame}
+		\frametitle{Rice genome: Overlap-Layout-Consensus assembly strategy} 
+				
+\begin{figure}%
+   \begin{center}%
+     \begin{minipage}{0.60\textwidth}%
+      \includegraphics[width=1.0\textwidth]{Overlap.png}%
+     \end{minipage}%
+     \ 
+     \begin{minipage}{0.20\textwidth}
+      \includegraphics[width=1.0\textwidth]{Dawning3000.png}
+     \end{minipage}%
+   \end{center}
+%\caption[1]{R. Fano (left) and D. Huffman (right) }
+ \end{figure}
+\begin{itemize}
+	\item The assembler identifies overlaps between various long reads;  and based on those overlaps, it subsequently merges the read fragments into longer sequences.	
+	\item Supercomputers (IBM, HP, Dawning 3000, etc.) are used to identify overlaps, and finally assemble the whole genome. 
+	\end{itemize}
+
+
+
+%		Classical model: de Bruijn graph $\Rightarrow$ Eulerian cycle}
+%                          \begin{figure}
+%				\centering
+%				\includegraphics[width=4.5in]{EulerianPath.eps}
+%			\end{figure}
+		
+		
+	\end{frame}
+	
+	
+
+	\begin{frame}	
+		\frametitle{But OLC strategy doesn't work for NGS}
+ \begin{figure}
+				\centering
+				\includegraphics[width=3.8in]{GenomeSequencer.png}
+			\end{figure}
+			\begin{itemize}
+			\item  NGS provides ultrahigh throughput at a substantially lower cost.
+			\item However, the reads are very short; making genome assembly extremely challenging. 
+			\item Reasons: it is unrealistic to calculate overlaps between all pairs of reads, and short reads usually lead to 
+			incorrect overlaps. 
+			\end{itemize}
+	\end{frame}
+
+
+	\begin{frame}
+		\frametitle{A better model: find Eulerian path in a  de Bruijn graph }
+		                          \begin{figure}
+				\centering
+				\includegraphics[width=4.5in]{EulerianPath.eps}
+			\end{figure}
+	\end{frame}
+
+
+
+
+	
+	
+	
+\begin{frame}
+		\frametitle{SOAP: ``contigs $\rightarrow$ scaffold $\rightarrow$ gap filling"}
+			\begin{figure}
+				\centering
+				\includegraphics[width=2.3in]{soap.eps}
+				%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+			\end{figure}
+	\end{frame}
+	
+	
+		\begin{frame}
+		\frametitle{Two challenges for assembly: repeats and chimeric reads}
+		                  \begin{figure}
+				\centering
+				\includegraphics[width=2in]{Repeats.png}
+			\end{figure}
+		\begin{itemize}
+	\item Challenge 1: Repeats usually entangle the de Brujin graph by a ``multi-entry and multi-exits" structure. 
+		\end{itemize}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=2.5in]{chimeric_read_definition1.eps}
+			\end{figure}
+
+	\begin{itemize}
+		\item Challenge 2: Chimeric reads will lead to incorrect connections among contigs. 
+	\end{itemize}
+		\end{frame}
+
+	
+\frame{
+	\frametitle{Limitations of traditional methods}
+	
+	\begin{itemize}
+		\item SOAP made significant progress in the field of genome sequencing; however, SOAP suffers from several limitations: \\ 
+		\begin{enumerate}
+
+				\item SOAP employs a heuristic scaffolding, making the final assembly short. \\ 
+				\item Inexact repeats make the de Bruijn graph entangled. It is not easy to untangle the de Brujin graph using traditional methods.
+		\end{enumerate}
+
+	\end{itemize}
+}
+
+%	
+%	\begin{frame}
+%		\frametitle{SOAPdenovo's methods for genome assembly}
+%		\begin{itemize}
+%			\item Preprocessing the sequencing data
+%			\item Contiging
+%			\begin{itemize}
+%				\item Solving tiny repeats
+%				\begin{figure}
+%					\centering
+%					\includegraphics[width=2in]{./figures/tiniyrepeat.eps}
+%					%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+%				\end{figure}
+%				\item Removing tips
+%				\begin{figure}
+%					\centering
+%					\includegraphics[width=2in]{./figures/tipremove.eps}
+%					%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+%				\end{figure}
+%				\item Merging bubbles
+%				\begin{figure}
+%					\centering
+%					\includegraphics[width=2in]{./figures/bubbleremove.eps}
+%					%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+%				\end{figure}
+%			\end{itemize}
+%		\end{itemize}
+%	\end{frame}
+%	\begin{frame}
+%		\frametitle{SOAPdenovo's method for genome assembly}
+%		\begin{itemize}
+%			\item Scaffolding
+%			\begin{itemize}
+%				\item Extract unambiguously linear paths from the graph to construct scaffolds
+%				\item Extend the scaffolds starting with short paired-ends and then iterate the scaffolding process, step by step, using longer insert size paired-ends
+%			\end{itemize}
+%			\begin{figure}
+%				\centering
+%				\includegraphics[width=2in]{./figures/scaffold.eps}
+%				%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+%			\end{figure}
+%			\item Gap closure
+%			\begin{figure}
+%				\centering
+%				\includegraphics[width=2in]{./figures/gapfilling.eps}
+%				%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+%			\end{figure}
+%		\end{itemize}
+%	\end{frame}
+%	
+%
+%	
+%		\begin{frame}
+%			\frametitle{Limitation of traditional method}
+%			\begin{itemize}
+%				\item Traditional method merge the repeats first and then try to split them.
+%				\item Inexact repeats make the de Bruijn graph entangled. It is not easy to untangle the area by traditional method.
+%			\end{itemize}
+%		\end{frame}
+%		\begin{frame}
+%			\frametitle{de Bruijn graph}
+%			\begin{figure}
+%				\centering
+%				\includegraphics[width=3.5in]{./figures/Diagram2.eps}
+%			\end{figure}
+%		\end{frame}
+%		\begin{frame}
+%		\begin{figure}
+%				\centering
+%				\includegraphics[width=3.5in]{./figures/Eular.png}
+%				\caption{\tiny Pevzner et al, An Eulerian path approach to DNA fragment assembly, PNAS, August 14, 2001} 
+%			\end{figure}
+%		\end{frame}
+%	
+%	%%\section{Our motivation}
+%		\begin{frame}
+%			\frametitle{Motivation}
+%			\begin{itemize}
+%				\item Most of the popular genome assembly algorithms employ a ``bottom-up" strategy, that is, reads are first merged into contigs via tip removing and bubbles merging in a de Bruijn graph, and the contigs are further merged into scaffolds with the helps of pair-ends information.  
+%				\item However, the “bottom-up’’ strategy usually suffers from the entangled repeats. How to extract sequence from the entangled repeats remains as a challenge.
+%				\item We proposed a “top-down” strategy, i.e. the framework of the whole genome is generated first by using paired k-mers information of the unique regions, and the gaps are filled by using bounded BFS. 
+%			\end{itemize}
+%		\end{frame}
+
+	
+%	%%\section{A top-down Method}
+%		\begin{frame}
+%			\frametitle{A Top-down Method: ARTS}
+%			\begin{itemize}
+%				\item Convert de Bruijn Graph to condensed de Bruijn Graph.
+%				\item Estimate the copy number of every condensed edge.
+%				\item Map paired-reads to the condensed edges and score the links, then remove the low score links.
+%				\item Remove false negative repeats and linearize the condensed edges.
+%				\item Gap closuring by distance-bounded BFS. 
+%			\end{itemize}
+%		\end{frame}
+		
+		\begin{frame}
+		\frametitle{ARCS: Assemble Reads via Combinatorial optimization in  Scaffolding}
+			\begin{figure}
+				\centering
+				\includegraphics[width=4.0in]{./figures/ARTS.png}
+			\end{figure}
+		\end{frame}				
+		
+	\begin{frame}
+	\frametitle{Key technique 1: copy number estimation using {\sc MinCostFlow}} 
+	
+	\begin{itemize}
+	\item 
+	A maximum likelihood framework is proposed to estimate the copy number of contigs.\\
+			\begin{figure}
+				\centering
+				\includegraphics[width=4in]{CopyNumberFormula.png}
+			\end{figure}
+
+	\item We applied the {\sc MinCostFlow} technique to find the most likely estimation. 
+			\begin{figure}
+				\centering
+				\includegraphics[width=3.5in]{CopyNumber2.png}
+			\end{figure}
+	\item Accuracy:  $99.99\%$ (for simulated E. Coli reads), and $97\%$ (for real data). 
+	\end{itemize} 
+	
+	\end{frame}
+	
+	
+		\begin{frame}
+		\frametitle{Key technique 2: estimating distance among contigs }
+		\begin{itemize} 
+		\item  
+		The distance $d$ between two contigs can be estimated using maximum likelihood, i.e. 
+		\begin{eqnarray}
+   			argmaxL(paired | d)\!=\!\prod_{i=1}^{n}P(d_{1i},d_{2i}|d)\!\times\!(1\!-\!\sum _{s}G_{\mu , \sigma}(s)\frac{w_d(s)}{L})^{R-n}
+    		\end{eqnarray}
+%		, where $P(d_{1i},d_{2i}|d)$ denotes the probability of mapping $k-mers$
+%         		\begin{eqnarray}
+%   							 P(d_{1i},d_{2i}|d)=G_{\mu ,\sigma}(d_{1i} + d_{2i} + d + 2r)\frac{1}{L}
+% 			\end{eqnarray}
+%		
+			\begin{figure}
+				\centering
+				\includegraphics[width=2in]{CopyNumber3.png}
+			%	\caption{Distance estimation deviation distribution}
+			\end{figure}
+		
+		\item Accuracy:  $\pm 5$ bp
+		
+		\end{itemize} 
+%		 is the probability of a Gaussian distribution with parameter $\mu , \sigma$ .\\
+%    		$d_{1}$ is the length of left edge and $d_{2}$ is the length of right edge.\\
+%    		$K$ is the mean pair-kmer number of every site. 
+%    		
+%		\begin{eqnarray}
+%   							P(c|d) = P_{\lambda}(c)
+%    		\end{eqnarray}\\
+%    		
+%    		$P_{\lambda}(c)$ is the probablity of a Poisson distribution with parameter $\lambda$. 
+%    		
+		\end{frame}
+		
+		
+		\begin{frame}
+		\frametitle{Key technique 3: optimal positioning contigs using linear programming} 
+		\begin{itemize}
+			\item Having acquired the distance matrix $D$ for unique contigs, the position of these contigs $x$ can be accurately determined via a linear program. 
+			\begin{figure}
+				\centering
+				\includegraphics[width=3in]{D2x.png}
+			\end{figure}
+
+			\item LP model: 
+		\[
+		\begin{array}{rrrrrrrrlr}
+		 \min &   ||{\epsilon}||_1 &  &\\
+		 s.t. &  Ax  +  \epsilon & = & D\\
+		\end{array} \nonumber
+		\]
+		where $A$ denotes the ``vertex-arc" representation of config network. 
+		\end{itemize}
+ 
+		\end{frame}	
+	
+	
+		
+		\frame{
+			\frametitle{ Final step: gap filling and scoring } 
+		
+		
+			\begin{figure}
+				\centering
+				\includegraphics[width=1.5in]{angap.png}
+				%\caption{ A simple illustration of different gaps. (A) Merge the contigs which share overlap; (B) Only one path to fill the gap (C) More than one paths to fill the gap}
+			\end{figure}	
+			
+	\begin{itemize}
+				\item Gap filling is accomplished by first enumerating all possible connection using bounded-BFS. 
+				\item The optimal combination of gap closures is selected using a scoring function.  
+			\end{itemize} 
+		\begin{table}[!hbp]
+		\caption{Percentage of intra-scaffold gaps that are closed}
+		\label{Table gapFillingResult}
+			\begin{tabular}{c|c|c|c|c}
+				\hline
+  					& No. of & Percentage of & Sum gap & Percent of gap  \\
+  					& gaps & gaps closed &  lengths(bp) & length closed \\ 
+				\hline
+					$E.coli$ & 9042 &  $98.3\%$ & 199024 &  $96.8\%$  \\
+				\hline
+			\end{tabular}
+			\end{table}
+	}		
+	%%\section{Result}
+		\begin{frame}
+			\frametitle{Results}
+			ARCS shows better performance than SOAP on several genomes (including E. Coli, S. suis, et al), especially for bacterial genomes containing  repeats.
+			\begin{figure}
+				\centering
+				\includegraphics[width=4in]{Results.eps}
+			\end{figure}
+		\end{frame}
+
+		\frame{
+			\frametitle{A case study of inexact repeat}
+
+			\begin{figure}
+				\centering
+				\includegraphics[width=3in]{inexact-repeat.eps}
+			\end{figure}
+			\begin{itemize}
+					\item Inexact repeats are broken into interleaving unique contigs and pure repeats.  In ARCS, the unique contigs serves as "bridges" to connect two SOAP scaffolds into one. 
+			\end{itemize}  
+		}
+		
+				\frame{
+			\frametitle{A case study of chimeric reads identification}
+
+			\begin{figure}
+				\centering
+				\includegraphics[width=3in]{chimeric_read.eps}
+			\end{figure}
+			\begin{itemize}
+					\item ARCS can successfully identify ``chimeric read" by checking paths in the cycle generated by conflicting contigs.   
+			\end{itemize}  
+		}
+		
+	%\section{Future Work}
+		\begin{frame} 
+			\frametitle{Future works and acknowlegement}
+	\begin{itemize}
+	
+	\item Future works	
+			\begin{enumerate}
+				\item Evaluating ARCS on more specifies;
+				\item Collaborate with BGI to extending ARCS to combine 2nd and 3rd generation sequencing data 
+				%\item Solve the circles caused by repeats
+			\end{enumerate}	
+	\item Acknowledgement: 
+		\begin{enumerate}
+			\item 973 program 
+			\item Natural Science Foundation of China
+			\end{enumerate}
+	
+	\end{itemize}
+		\end{frame}
+		
+	%\section{Acknowledgement}
+	%\section{Thanks}
+		\begin{frame}	
+			\begin{block}{}
+			Thank you
+			\end{block}
+		\end{frame}
+		
+		
+%		\frame{
+%\frametitle{ Standard form   }
+%
+%\begin{itemize}
+%	\item 
+%\item Here 
+%$\mathbf{c} = \left(
+%	   \begin{array}{c}
+%		 c_1 \\
+%	  	        c_2\\
+%	                                \vdots \\
+%	                         c_n 
+%	      \end{array}
+%	      \right) $, 
+%	$\mathbf{x} = \left(
+%	   \begin{array}{c}
+%		 x_1 \\
+%	  	        x_2\\
+%	                                \vdots \\
+%	                         x_n 
+%	      \end{array}
+%	      \right) $, \\
+%			      $\mathbf{D}=\left( 
+%	\begin{array}{cccc}
+%	d_{11} & d_{12} & \cdots & d_{1n} \\
+%	d_{21} & d_{22} & \cdots & d_{2n} \\
+%	\vdots & \vdots & \ddots & \vdots \\ 
+%	d_{m1} & d_{m2} & \cdots & d_{mn} 
+%	\end{array}
+%	\right)$ \textcolor{red}{$\Rightarrow$} 
+%	$\mathbf{x} = \left(
+%	   \begin{array}{c}
+%		 x_1 \\
+%	  	        x_2\\
+%	                                \vdots \\
+%	                         x_n 
+%	      \end{array}
+%	      \right) $.
+% 	      
+%	                             
+%\end{itemize}
+%
+%} 
+
+\end{document}

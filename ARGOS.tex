@@ -1,0 +1,163 @@
+
+
+\documentclass[mathserif]{beamer}
+\usepackage[noindent,nofonts]{ctexcap} 
+\setCJKmainfont[BoldFont=STHeiti]{STXihei} 
+%\setCJKmainfont[BoldFont=STZhongsong]{STZhongsong} 
+\usepackage{beamerthemeshadow}
+\usepackage{beamerthemesplit}
+%\usetheme{shadow}
+\usecolortheme{default}
+\setbeamertemplate{footline}[frame number]
+\useinnertheme[shadow=true]{rounded}
+%\setbeamertemplate{footline}{\insertframenumber/\inserttotalframenumber}
+%\useoutertheme{infolines}
+%\setbeamertemplate{headline}{} % removes the headline that infolines inserts
+
+%\usetheme{boxes}
+%\usepackage{amsmass}
+%\usepackage{amssymb,amsfonts,url}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{graphicx}
+\graphicspath{{Problems/}}
+
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{pgfplots}
+\usepackage{verbatim}
+\usetikzlibrary{arrows,shapes}
+
+
+%\usepackage{CJK}
+%\usepackage{pinyin}
+
+%    \begin{figure}
+%        \centering
+%        \includegraphics[width=0.8\textwidth]{newGeneRep.eps}
+%    \end{figure}
+
+% \begin{figure}%
+%   \begin{center}%
+%     \begin{minipage}{0.70\textwidth}%
+%      \includegraphics[width=1.0\textwidth]{comp25000.eps}%
+%     \end{minipage}%
+%     \begin{minipage}{0.30\textwidth}
+%      \includegraphics[width=1.0\textwidth]{comparelabel.eps}%
+%     \end{minipage}%
+%   \end{center}
+% \end{figure}
+
+% \begin{table}
+%   {\begin{tabular}{l|rrr}\hline
+%       & \multicolumn{3}{c}{Actual number of DCJ operations}\\
+%       \# genes &\# genes $\times 1$&\# genes $\times 2$&\# genes  $\times 3$ \\
+% \hline
+%      (a)~25,000 & 0.5\% ~~&  0.9\% ~~& 1.7\%~~\\
+%       (b)~10,000 & 0.8\%~~ &  1.4\% ~~& 2.7\%~~\\
+%      (c)~ 1,000 & 2.7\%~~ & 4.7\%~~ & 14.7\%~~\\ \hline
+%     \end{tabular}} {}%
+% \end{table}
+
+% \begin{eqnarray}
+% T(n) &=&  \sum_{i=1}^n C_i \\
+%      &=&  \# PUSH + \#POP \\
+%      &<& 2\times \#PUSH \\
+%      &<& 2n \\
+% \end{eqnarray}
+
+% \[ 
+% \begin{matrix}
+% \begin{pmatrix}
+% C_{11} & C_{12} \\ 
+% C_{21} & C_{22} 
+% \end{pmatrix}
+% =
+% \begin{pmatrix}
+% A_{11} & A_{12} \\ 
+% A_{21} & A_{22}  
+% \end{pmatrix}
+% 
+% \begin{pmatrix}
+% B_{11} & B_{12} \\ 
+% B_{21} & B_{22}  
+%  
+% \end{pmatrix}
+%     
+%    \end{matrix}
+% \]
+% 
+% 
+% \begin{eqnarray}
+%  C_{11} &=& (A_{11}\times B_{11}) + (A_{12} \times B_{21}) \\
+% C_{12} &=& (A_{11}\times B_{12}) + (A_{12} \times B_{22}) \\
+% C_{21} &=& (A_{21}\times B_{11}) + (A_{22} \times B_{21}) \\
+% C_{22} &=& (A_{21}\times B_{12}) + (A_{22} \times B_{22}) 
+% \end{eqnarray}
+% \begin{figure}%
+%      \begin{minipage}{0.32\textwidth}%
+%       \includegraphics[width=1.0\textwidth]{L7-intervalschedulingdpalgo.eps}%
+%      \end{minipage}%
+%  \quad
+%      \begin{minipage}{0.30\textwidth}
+%       \includegraphics[width=1.0\textwidth]{L7-intervalschedulinggreedyalgo.eps}%
+%      \end{minipage}%
+%  \quad
+%       \begin{minipage}{0.25\textwidth}
+%       \includegraphics[width=1.0\textwidth]{L7-intervalschedulinggreedyalgo2.eps}%
+%      \end{minipage}%
+% 
+%  \end{figure}
+
+\title{2013年度工作总结 }
+
+\author{\Large 卜\ 东\ 波 } 
+\institute{ {\large 中科院计算所}}
+
+\date{\today}
+
+\begin{document}
+%\begin{CJK}{UTF8}{cyberbit}
+
+
+\tikzstyle{vertex}=[circle,fill=black!25,minimum size=20pt,inner sep=0pt]
+\tikzstyle{selected vertex} = [vertex, fill=red!24]
+\tikzstyle{edge} = [draw,thick,->]
+\tikzstyle{weight} = [font=\small]
+\tikzstyle{selected edge} = [draw,line width=5pt,-,red!50]
+\tikzstyle{ignored edge} = [draw,line width=5pt,-,black!20]
+
+
+\frame{\titlepage}
+
+
+\frame{
+\frametitle{提纲}
+	\begin{itemize}
+		\item 研究进展
+		\item 教学工作
+		\item 文章与软件
+		\item 经费申请
+		\item 明年规划
+	\end{itemize}
+
+}
+
+
+
+\frame{
+	\begin{block}{}
+	研究进展一：蛋白质结构预测：观点、算法与软件
+	\end{block}
+}
+
+
+\frame{
+	\begin{block}{}
+Thanks
+	\end{block}
+}
+
+\end{document} 

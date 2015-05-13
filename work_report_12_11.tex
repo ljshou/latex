@@ -1,0 +1,159 @@
+%\documentclass[slidestop,compress,mathserif,blue]{beamer}
+\documentclass[mathserif]{beamer}
+%\usepackage[noindent,nofonts]{ctexcap} 
+\usepackage{CJK} 
+%\setCJKmainfont[BoldFont=STHeiti]{STXihei} 
+%\setCJKmainfont[BoldFont=STZhongsong]{STZhongsong} 
+\usepackage{beamerthemeshadow}
+\usepackage{beamerthemesplit}
+%\usetheme{shadow}
+\usecolortheme{default}
+\setbeamertemplate{footline}[frame number]
+\useinnertheme[shadow=true]{rounded}
+%\setbeamertemplate{footline}{\insertframenumber/\inserttotalframenumber}
+%\useoutertheme{infolines}
+%\setbeamertemplate{headline}{} % removes the headline that infolines inserts
+
+%\usetheme{boxes}
+%\usepackage{amsmass}
+%\usepackage{amssymb,amsfonts,url}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{graphicx}
+\graphicspath{{Problems/}}
+
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{pgfplots}
+\usepackage{verbatim}
+\usetikzlibrary{arrows,shapes}
+\usepackage{color}
+
+\usepackage{multirow}
+\usetheme{Frankfurt}
+\usecolortheme{default}
+\setbeamertemplate{frametitle}[default][left]
+
+\usepackage{graphicx}
+%\graphicspath{{./fig/}}
+\usepackage{float}
+%\usepackage{color}
+
+\usepackage{cases}
+\usepackage{mathrsfs}
+
+\usepackage{url}
+
+\newcommand{\rmnum}[1]{\romannumeral#1}
+\newcommand{\Rmnum}[1]{\uppercase\expandafter{\romannumeral#1}}
+
+
+
+\begin{document}
+\begin{CJK}{UTF8}{gkai}
+	
+\title{工作汇报}
+\author{寿林钧} 
+\institute{中科院计算所} 
+\date{\today} 
+
+	\begin{frame}
+		\titlepage
+	\end{frame}
+
+
+
+\begin{frame}
+	\frametitle{Strain Smoothing: Connectivity}	
+	\begin{itemize}
+	\item 循环每一个几何单元，建立新的 connectivity（与几何单元相交的所有数学网格的节点）.
+	\item 在每一个高斯点处计算$\frac{\partial \tilde{N_I}}{\partial x_i}$。
+\end{itemize}		
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=1.2in]{./ljshou_figures/quad_4.eps}
+		\caption{New connectivity in Quad4}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Strain Smoothing: Corrected nodal derivatives}
+	\begin{align*}
+		&\mathbf{q(x)}=[1 \quad x \quad y \quad z]^{\text{T}} \\
+		\\
+		&\int_{\Omega_S}\mathbf{q(x)}\left(\frac{\partial \tilde{N_I}}{\partial x_i} - \frac{\partial N_I}{\partial x_i}\right)d\Omega = \mathbf{0} \\
+		&\int_{\Omega_S}\mathbf{q(x)}\frac{\partial \tilde{N_I}}{\partial x_i}d\Omega = 
+		\int_{\Omega_S}\mathbf{q(x)}\frac{\partial {N_I}}{\partial x_i}d\Omega \\
+		&\int_{\Omega_S}\mathbf{q(x)}\frac{\partial \tilde{N_I}}{\partial x_i}d\Omega = 
+		\int_{\Gamma_S}N_I(\mathbf{x})\mathbf{q(x)}n_i d\Gamma - 
+		\int_{\Omega_S}N_I(\mathbf{x})\mathbf{q}_{,i}(\mathbf{x})d\Omega
+	\end{align*}
+\end{frame}
+	
+\begin{frame}
+	\frametitle{Strain Smoothing: Integration scheme}
+	\begin{itemize}
+		\item 四面体内部布4个高斯积分点
+		\item 四面体面上布7个高斯积分点
+	\end{itemize}
+	\begin{columns}
+		\begin{column}[pos]{0.5\textwidth}
+			\begin{figure}
+				\includegraphics[width=2.0in]{./ljshou_figures/strain_smoothing_qpoints.eps}
+			\end{figure}
+		\end{column}
+			\begin{column}[pos]{0.5\textwidth}
+			\tiny
+			\begin{align*}
+				&\mathbf{q_{,x}(x)}=[0 \quad 1 \quad 0 \quad 0]^{\text{T}} \\
+				\\
+				&\int_{\Omega_S}\tilde{N}_{I,x}(\mathbf{x})d\Omega = 					\int_{\Gamma_S}N_I(\mathbf{x})n_xd\Gamma \\
+				&\int_{\Omega_S}\tilde{N}_{I,x}(\mathbf{x})xd\Omega = \int_{\Gamma_S}N_I(\mathbf{x})xn_xd\Gamma 
+										- \int_{\Omega_S}N_I(\mathbf{x})d\Omega \\
+				&\int_{\Omega_S}\tilde{N}_{I,x}(\mathbf{x})yd\Omega = \int_{\Gamma_S}N_I(\mathbf{x})yn_xd\Gamma \\
+				&\int_{\Omega_S}\tilde{N}_{I,x}(\mathbf{x})zd\Omega = \int_{\Gamma_S}N_I(\mathbf{x})zn_xd\Gamma \\
+			\end{align*}
+		\end{column}
+	
+	\end{columns}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{效率问题}
+	\begin{itemize}
+		\item 新的连通性增加了带宽，导致集成刚度矩阵耗时增加。
+		\item Worst case: 连通性从8个节点增加到27个节点，带宽增加3.3倍。
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Strain Smoothing}			
+	\begin{enumerate}
+		\item 体高斯积分点落在数学单元面上	
+		\item 面高斯积分点落在数学单元面上
+	\end{enumerate}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=1.5in]{./ljshou_figures/quad_4_corner_case.eps}
+		\caption{Corner Cases: qpoints located on facets of cube}
+	\end{figure}
+
+\end{frame}
+
+
+%\section{Thanks}
+\begin{frame}	
+	%\Huge{\centerline{Thank You!}}
+	\begin{block}
+		\Huge{\centerline{Thank you}}
+		\centerline{shoulinjun@ncic.ac.cn}
+	\end{block}
+\end{frame}
+		
+\end{CJK}
+\end{document}

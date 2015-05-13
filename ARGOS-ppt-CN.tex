@@ -1,0 +1,349 @@
+%\documentclass[slidestop,compress,mathserif,blue]{beamer}
+
+
+\documentclass[mathserif]{beamer}
+\usepackage[noindent,nofonts]{ctexcap} 
+%\setCJKmainfont[BoldFont=STHeiti]{STXihei} 
+\setCJKmainfont[BoldFont=STZhongsong]{STZhongsong} 
+\usepackage{beamerthemeshadow}
+\usepackage{beamerthemesplit}
+%\usetheme{shadow}
+\usecolortheme{default}
+\setbeamertemplate{footline}[frame number]
+\useinnertheme[shadow=true]{rounded}
+%\setbeamertemplate{footline}{\insertframenumber/\inserttotalframenumber}
+%\useoutertheme{infolines}
+%\setbeamertemplate{headline}{} % removes the headline that infolines inserts
+
+%\usetheme{boxes}
+%\usepackage{amsmass}
+%\usepackage{amssymb,amsfonts,url}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{graphicx}
+\graphicspath{{Problems/}}
+
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage{pgfplots}
+\usepackage{verbatim}
+\usetikzlibrary{arrows,shapes}
+
+\usepackage{multirow}
+\usetheme{Frankfurt}
+\usecolortheme{default}
+\setbeamertemplate{frametitle}[default][left]
+
+\usepackage{graphicx}
+%\graphicspath{{./fig/}}
+\usepackage{float}
+%\usepackage{color}
+
+\usepackage{cases}
+\usepackage{mathrsfs}
+
+\usepackage{url}
+
+\newcommand{\rmnum}[1]{\romannumeral#1}
+\newcommand{\Rmnum}[1]{\uppercase\expandafter{\romannumeral#1}}
+
+\title{课题组2：基因组序列拼接进展汇报}
+\author{ 卜$\ $东$\ $波 } 
+\institute{中科院计算所} 
+\date{\today} 
+
+
+\begin{document}
+	
+
+	\begin{frame}
+			\titlepage
+	\end{frame}
+	
+	\begin{frame}
+			\frametitle{基因组序列拼接简介}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=6in]{Genome.eps}
+			\end{figure}
+	\end{frame}
+
+	\begin{frame}
+			\frametitle{基因组序列拼接简介}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=6in]{ShotgunAssembly.eps}
+			\end{figure}
+	\end{frame}
+
+	\begin{frame}
+			\frametitle{基因组序列拼接：一个例子}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=4in]{AssemblyExample.eps}
+			\end{figure}
+
+	\end{frame}
+	
+	\begin{frame}
+			\frametitle{基因组序列拼接：一个比喻}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=2in]{GenomeBookStrips.eps}
+			\end{figure}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{经典模型：de Bruijn图$\Rightarrow$欧拉回路}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=4.5in]{EulerianPath.eps}
+			\end{figure}
+		
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{困难：重复序列（Repeat）}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=4.5in]{./figures/RepeatsInEulerPath.eps}
+			\end{figure}
+		
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{测序仪读长比较}
+                          \begin{figure}
+				\centering
+				\includegraphics[width=4.5in]{GenomeSequencer.eps}
+			\end{figure}
+		
+	\end{frame}
+
+	
+	
+	
+\begin{frame}
+		\frametitle{Schematic overview of the assembly algorithm of SOAPdenovo}
+			\begin{figure}
+				\centering
+				\includegraphics[width=2in]{./figures/soap.eps}
+				\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+			\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{SOAPdenovo's methods for genome assembly}
+		\begin{itemize}
+			\item Preprocessing the sequencing data
+			\item Contiging
+			\begin{itemize}
+				\item Solving tiny repeats
+				\begin{figure}
+					\centering
+					\includegraphics[width=2in]{./figures/tiniyrepeat.eps}
+					%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+				\end{figure}
+				\item Removing tips
+				\begin{figure}
+					\centering
+					\includegraphics[width=2in]{./figures/tipremove.eps}
+					%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+				\end{figure}
+				\item Merging bubbles
+				\begin{figure}
+					\centering
+					\includegraphics[width=2in]{./figures/bubbleremove.eps}
+					%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+				\end{figure}
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+	\begin{frame}
+		\frametitle{SOAPdenovo's method for genome assembly}
+		\begin{itemize}
+			\item Scaffolding
+			\begin{itemize}
+				\item Extract unambiguously linear paths from the graph to construct scaffolds
+				\item Extend the scaffolds starting with short paired-ends and then iterate the scaffolding process, step by step, using longer insert size paired-ends
+			\end{itemize}
+			\begin{figure}
+				\centering
+				\includegraphics[width=2in]{./figures/scaffold.eps}
+				%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+			\end{figure}
+			\item Gap closure
+			\begin{figure}
+				\centering
+				\includegraphics[width=2in]{./figures/gapfilling.eps}
+				%\caption{\tiny Li et al, De novo assembly of human genomes with massively parallel short read sequencing, Genome Research, Dec. 17, 2010}
+			\end{figure}
+		\end{itemize}
+	\end{frame}
+	
+
+	
+		\begin{frame}
+			\frametitle{Limitation of traditional method}
+			\begin{itemize}
+				\item Traditional method merge the repeats first and then try to split them.
+				\item Inexact repeats make the de Bruijn graph entangled. It is not easy to untangle the area by traditional method.
+			\end{itemize}
+		\end{frame}
+		\begin{frame}
+			\frametitle{de Bruijn graph}
+			\begin{figure}
+				\centering
+				\includegraphics[width=3.5in]{./figures/Diagram2.eps}
+			\end{figure}
+		\end{frame}
+		\begin{frame}
+		\begin{figure}
+				\centering
+				\includegraphics[width=3.5in]{./figures/Eular.png}
+				\caption{\tiny Pevzner et al, An Eulerian path approach to DNA fragment assembly, PNAS, August 14, 2001} 
+			\end{figure}
+		\end{frame}
+	
+	%%\section{Our motivation}
+		\begin{frame}
+			\frametitle{Motivation}
+			\begin{itemize}
+				\item Most of the popular genome assembly algorithms employ a ``bottom-up" strategy, that is, reads are first merged into contigs via tip removing and bubbles merging in a de Bruijn graph, and the contigs are further merged into scaffolds with the helps of pair-ends information.  
+				\item However, the “bottom-up’’ strategy usually suffers from the entangled repeats. How to extract sequence from the entangled repeats remains as a challenge.
+				\item We proposed a “top-down” strategy, i.e. the framework of the whole genome is generated first by using paired k-mers information of the unique regions, and the gaps are filled by using bounded BFS. 
+			\end{itemize}
+		\end{frame}
+
+	
+	%%\section{A top-down Method}
+		\begin{frame}
+			\frametitle{A Top-down Method: ARTS}
+			\begin{itemize}
+				\item Convert de Bruijn Graph to condensed de Bruijn Graph.
+				\item Estimate the copy number of every condensed edge.
+				\item Map paired-reads to the condensed edges and score the links, then remove the low score links.
+				\item Remove false negative repeats and linearize the condensed edges.
+				\item Gap closuring by distance-bounded BFS. 
+			\end{itemize}
+		\end{frame}
+		
+		\begin{frame}
+		\frametitle{A Top-down Method: ARTS}
+			\begin{figure}
+				\centering
+				\includegraphics[width=3.5in]{./figures/ARTS.png}
+			\end{figure}
+			
+		\end{frame}				
+		
+		\begin{frame}
+	\frametitle{Copy Number Estimation using Minimum Cost Flow Method}
+	
+	ARTS adopt a maximum likelihood framework to estimate the copy number of sequence.\\
+	In this setting, ARTS follow a directed network flow-based algorithm, which takes advantage of high coverage to estimate the copy counts of repeats in a genome accurately.
+	The accuracy of estimation on simulated E.coli reads is 99.99\% and that of real reads is 97\%.
+
+	\end{frame}
+	
+		\begin{frame}
+		\frametitle{Scoring Links between Contigs}
+		ARTS adopt a generative model; Here, ARTS suppose the distribution of the count of paired kmers between two condensed edge follows a Poisson $P_{\lambda}$, then the log likelihood evaluates the quality of the link between two condensed edges, in which the sore of the links caused by chimeric reads is very low. 
+		\begin{eqnarray}
+   							\lambda = \int _{d1} \int _{d2} KG_{\mu , \sigma}(y+d-x)dxdy
+    		\end{eqnarray}\\
+    		The insert size of paired reads follow a Gaussian distribution.\\
+    		$G_{\mu , \sigma}$ is the probability of a Gaussian distribution with parameter $\mu , \sigma$ .\\
+    		$d_{1}$ is the length of left edge and $d_{2}$ is the length of right edge.\\
+    		$K$ is the mean pair-kmer number of every site. 
+    		
+		\begin{eqnarray}
+   							P(c|d) = P_{\lambda}(c)
+    		\end{eqnarray}\\
+    		
+    		$P_{\lambda}(c)$ is the probablity of a Poisson distribution with parameter $\lambda$. 
+    		
+		\end{frame}
+		
+		\begin{frame}
+		\frametitle{Linearizing the Condensed Edges}
+			Reconstructing a sparse signal x approximately from noisy data
+			\begin{eqnarray}
+			b = Ax + z, 
+			\end{eqnarray}
+			
+			Assuming that z has norm less than some error tolerance $\epsilon$.
+			
+			Formalization:
+		\[
+		\begin{array}{rrrrrrrrlr}
+		 \min & \sum _{i}  & |{\epsilon}_{i}| &  &\\
+		 s.t. &  AX & + & \epsilon & = & b\\
+		\end{array} \nonumber
+		\]
+		
+		A is the arc matrix and b is the distance between two condensed edges.
+		\end{frame}	
+	
+		\begin{frame}
+    			\frametitle{Distance Estimation}
+    				
+    				The probability of Mapped paired-kmer\\
+    						\begin{eqnarray}
+   							 P(d_{1i},d_{2i}|d)=G_{\mu ,\sigma}(d_{1i} + d_{2i} + d + 2r)\frac{1}{L}
+    						\end{eqnarray}\\
+    				Likelihood:    				
+    				
+    						\begin{eqnarray}
+   							 L(pair reads|d)=\prod_{i=1}^{n}P(d_{1i},d_{2i}|d)\times(1-\sum _{s}G_{\mu , \sigma}(s)\frac{w_d(s)}{L})^{R-n}
+    						\end{eqnarray}\\
+    				Objective:\\
+    						\begin{eqnarray}
+    							\bar{d}_{ij} = argmax _d \quad L(data|d)
+    						\end{eqnarray}\\
+    				
+    				
+    		\end{frame}
+		
+	%%\section{Result}
+		\begin{frame}
+			\frametitle{Result}
+			ARTS shows better performance than SOAP on several genomes, especially for bacterial genomes containing small repeats.
+			\begin{figure}
+				\centering
+				\includegraphics[width=4in]{./11.png}
+			\end{figure}
+		\end{frame}
+
+	%\section{Future Work}
+		\begin{frame} 
+			\frametitle{Future Work}
+			\begin{itemize}
+				\item Improve the accuracy of copy number estimation. 	
+				\item Reduce memory and time usage of ARTS.
+				\item Metagenome assembly
+				\item Combining 2nd and 3rd generation sequencing data 
+				%\item Solve the circles caused by repeats
+			\end{itemize}	
+		\end{frame}
+	%\section{Acknowledgement}
+		\begin{frame}
+			\frametitle{Acknowledgement}
+			\begin{itemize}
+				\item Xingwu Liu, ICT, CAS
+				\item Shiwei Sun, ICT, CAS
+				\item Shuai Cheng Li, CityU
+				\item Cheng Wang, AMSS, CAS
+				\item Bin Ling, ICT, CAS
+				\item Chunlin Huang, ICT, CAS
+				\item Chao Wang, ICT, CAS
+			\end{itemize}
+		\end{frame}
+	%\section{Thanks}
+		\begin{frame}	
+			\Huge{\centerline{Thank You!}}
+		\end{frame}
+		
+\end{document}
